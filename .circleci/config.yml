@@ -1,0 +1,62 @@
+version: 2
+
+reusable-steps:
+  - &setup_aws_cli
+    run:
+      name: Setup AWS CLI
+      command: sudo pip install awscli
+  - &gradle_props
+    run:
+      name: Write gradle.properties
+      command: /bin/bash writegradleprops.sh
+  - &publish_to_qa
+    run:
+      name: Publish to QA
+      command: ./gradlew publishDeveloperBundleToQa
+  - &publish_to_release
+    run:
+      name: Publish to Release
+      command: ./gradlew publishDeveloperBundleToRelease
+
+jobs:
+  deploy-qa:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - *setup_aws_cli
+      - checkout
+      - *gradle_props
+      - *publish_to_qa
+
+  deploy-release:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - *setup_aws_cli
+      - checkout
+      - *gradle_props
+      - *publish_to_release
+
+  validate:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - *setup_aws_cli
+      - checkout
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - validate:
+         filters:
+           branches:
+              only: /.*feature.*/
+      - deploy-qa:
+          filters:
+            branches:
+              only: /.*release.*/
+      - deploy-release:
+          filters:
+            branches:
+              only: master
