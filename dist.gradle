@@ -50,10 +50,10 @@ task createDeveloperBundle(type: Zip) {
 apply from: 'publish-repo.gradle'
 
 task publishDeveloperBundleToRelease(type: Exec, dependsOn: createDeveloperBundle) {
-    commandLine 'aws', '--region', 'eu-west-1', 's3', 'cp', "build/AppFlow-Developer-Bundle-${rootProject.version}", 's3://sdk-releases.aevi.com/maven2/com/aevi/sdk/pos/flow/appflow-developer-bundle/dists/'
+    commandLine 'aws', '--region', 'eu-west-1', 's3', 'cp', "build/AppFlow-Developer-Bundle-${rootProject.version}.zip", 's3://sdk-releases.aevi.com/maven2/com/aevi/sdk/pos/flow/appflow-developer-bundle/dists/'
 }
 
 task publishDeveloperBundleToQa(type: Exec, dependsOn: createDeveloperBundle) {
-    commandLine 'aws', '--region', 'eu-west-1', 's3', 'cp', "build/AppFlow-Developer-Bundle-${rootProject.version}", 's3://sdk-qa.aevi.com/maven2/com/aevi/sdk/pos/flow/appflow-developer-bundle/dists/'
+    commandLine 'aws', '--region', 'eu-west-1', 's3', 'cp', "build/AppFlow-Developer-Bundle-${rootProject.version}.zip", 's3://sdk-qa.aevi.com/maven2/com/aevi/sdk/pos/flow/appflow-developer-bundle/dists/'
 }
 
