@@ -1,8 +1,8 @@
 // Dependencies
-ext.appFlowVersion = '2.0.0-RC3'
-ext.fpsVersion = '2.0.0-RC3'
-ext.configProviderVersion = '2.0.0-RC4'
-ext.paymentLegacyAppsVersion = '2.0.0-RC3'
+ext.appFlowVersion = '2.0.0-RC4'
+ext.fpsVersion = '2.0.0-RC4'
+ext.configProviderVersion = '2.0.0-RC5'
+//ext.paymentLegacyAppsVersion = '2.0.0-RC3'
 
 configurations {
     apiSamples
@@ -17,8 +17,8 @@ dependencies {
     apiSamples "com.aevi.sdk.pos.flow:payment-service-sample-release:${appFlowVersion}@apk"
     apiSamples "com.aevi.sdk.pos.flow:flow-service-sample-release:${appFlowVersion}@apk"
     configProvider "com.aevi.sdk.pos.flow:developer-config-provider-release:${configProviderVersion}@apk"
-    legacyApps "com.aevi.sdk:payment-flow-legacy-app-release:${paymentLegacyAppsVersion}@apk"
-    legacyApps "com.aevi.sdk:payment-request-legacy-app-release:${paymentLegacyAppsVersion}@apk"
+    //legacyApps "com.aevi.sdk:payment-flow-legacy-app-release:${paymentLegacyAppsVersion}@apk"
+    //legacyApps "com.aevi.sdk:payment-request-legacy-app-release:${paymentLegacyAppsVersion}@apk"
 }
 
 task createDeveloperBundle(type: Zip) {
@@ -39,9 +39,9 @@ task createDeveloperBundle(type: Zip) {
         into "apks/samples/"
     }
 
-    from(configurations.legacyApps) {
-        into "apks/legacy/"
-    }
+    //from(configurations.legacyApps) {
+        //into "apks/legacy/"
+    //}
 
     baseName = "AppFlow-Developer-Bundle-${rootProject.version}"
     destinationDir = new File("build/")
