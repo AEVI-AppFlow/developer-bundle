@@ -1,4 +1,4 @@
-version = "v6-RC7"
+version = "v6"
 
 buildscript {
     repositories {
