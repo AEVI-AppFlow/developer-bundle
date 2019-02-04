@@ -12,7 +12,7 @@ configurations {
 }
 
 dependencies {
-    fps "com.aevi.sdk:flow-processing-service-releaseObfuscated:${fpsVersion}@apk"
+    fps "com.aevi.sdk:flow-processing-service-release:${fpsVersion}@apk"
     apiSamples "com.aevi.sdk.pos.flow:payment-initiation-sample-release:${appFlowVersion}@apk"
     apiSamples "com.aevi.sdk.pos.flow:payment-service-sample-release:${appFlowVersion}@apk"
     apiSamples "com.aevi.sdk.pos.flow:flow-service-sample-release:${appFlowVersion}@apk"
