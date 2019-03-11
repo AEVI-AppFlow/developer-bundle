@@ -1,4 +1,4 @@
-version = "v7-RC2"
+version = "v8-RC3"
 
 buildscript {
     repositories {
