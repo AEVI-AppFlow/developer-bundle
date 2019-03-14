@@ -1,5 +1,5 @@
 // Dependencies
-ext.appFlowVersion = '2.0.1'
+ext.appFlowVersion = '2.0.2'
 ext.fpsVersion = '2.0.0'
 ext.configProviderVersion = '2.0.0'
 //ext.paymentLegacyAppsVersion = '2.0.0'
