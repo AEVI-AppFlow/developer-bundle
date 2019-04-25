@@ -1,7 +1,7 @@
 // Dependencies
-ext.appFlowVersion = '2.1.0-RC7'
-ext.fpsVersion = '2.1.0-RC7'
-ext.configProviderVersion = '2.1.0-RC7'
+ext.appFlowVersion = '2.1.0-RC8'
+ext.fpsVersion = '2.1.0-RC8'
+ext.configProviderVersion = '2.1.0-RC8'
 //ext.paymentLegacyAppsVersion = '2.0.0'
 
 configurations {
