@@ -1,7 +1,7 @@
 // Dependencies
-ext.appFlowVersion = '2.0.2'
-ext.fpsVersion = '2.0.0'
-ext.configProviderVersion = '2.0.0'
+ext.appFlowVersion = '2.1.0'
+ext.fpsVersion = '2.1.0'
+ext.configProviderVersion = '2.1.0'
 //ext.paymentLegacyAppsVersion = '2.0.0'
 
 configurations {
@@ -12,7 +12,7 @@ configurations {
 }
 
 dependencies {
-    fps "com.aevi.sdk:flow-processing-service-releaseObfuscated:${fpsVersion}@apk"
+    fps "com.aevi.sdk:flow-processing-service-release:${fpsVersion}@apk"
     apiSamples "com.aevi.sdk.pos.flow:payment-initiation-sample-release:${appFlowVersion}@apk"
     apiSamples "com.aevi.sdk.pos.flow:payment-service-sample-release:${appFlowVersion}@apk"
     apiSamples "com.aevi.sdk.pos.flow:flow-service-sample-release:${appFlowVersion}@apk"
