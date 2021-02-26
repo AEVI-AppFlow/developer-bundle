@@ -1,0 +1,121 @@
+# Workflow for releasing AppFlow developer bundles
+
+name: Deploy AppFlow developer bundles
+
+env:
+  NOTIFICATION_FOOTER: Bundle it. Ship it.
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  GITHUB_ACTOR: ${{ secrets.CI_BOT_USERNAME }}
+  GITHUB_TOKEN: ${{ secrets.CI_BOT_PAT }}
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+'
+      - 'v[0-9]+-*.[0-9]+'
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Extract tag from ref
+        # ref is refs/tag/<tag> - split by / and retrieve the 3rd element
+        run: echo "TAG=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_ENV
+
+      - name: Extract semver details from final release tag
+        if: contains(env.TAG, '-') != true
+        run: |
+          echo "PRE_RELEASE=false" >> $GITHUB_ENV
+
+      - name: Extract semver details from pre-release tag
+        if: contains(env.TAG, '-')
+        run: |
+          echo "PRE_RELEASE=true" >> $GITHUB_ENV
+
+      - name: Write app versions
+        id: app-versions
+        run: ./gradlew writeVersions
+
+      - name: Create output dirs
+        run: mkdir -p distFiles/apks/samples
+
+      - name: Download FPS
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Aevi-UK/flow-processing-service"
+          version: "tags/${{ steps.app-versions.outputs.fps_version }}"
+          file: "FlowProcessingService-Release-${{ steps.app-versions.outputs.fps_version }}.apk"
+          target: "distFiles/apks/FlowProcessingService-Release-${{ steps.app-versions.outputs.fps_version }}.apk"
+          token: ${{ secrets.CI_BOT_PAT }}
+
+      - name: Download config provider
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Aevi-AppFlow/developer-config-provider"
+          version: "tags/${{ steps.app-versions.outputs.config_provider_version }}"
+          file: "DeveloperConfigProvider-Release-${{ steps.app-versions.outputs.config_provider_version }}.apk"
+          target: "distFiles/apks/DeveloperConfigProvider-Release-${{ steps.app-versions.outputs.config_provider_version }}.apk"
+          token: ${{ secrets.CI_BOT_PAT }}
+
+      - name: Download payment initiation sample
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Aevi-AppFlow/pos-android-sdk"
+          version: "tags/${{ steps.app-versions.outputs.samples_version }}"
+          file: "PaymentInitiationSample-Release-${{ steps.app-versions.outputs.samples_version }}.apk"
+          target: "distFiles/apks/samples/PaymentInitiationSample-Release-${{ steps.app-versions.outputs.samples_version }}.apk"
+          token: ${{ secrets.CI_BOT_PAT }}
+
+
+      - name: Download payment service sample
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Aevi-AppFlow/pos-android-sdk"
+          version: "tags/${{ steps.app-versions.outputs.samples_version }}"
+          file: "PaymentServiceSample-Release-${{ steps.app-versions.outputs.samples_version }}.apk"
+          target: "distFiles/apks/samples/PaymentServiceSample-Release-${{ steps.app-versions.outputs.samples_version }}.apk"
+          token: ${{ secrets.CI_BOT_PAT }}
+
+
+      - name: Download payment initiation sample
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Aevi-AppFlow/pos-android-sdk"
+          version: "tags/${{ steps.app-versions.outputs.samples_version }}"
+          file: "FlowServiceSample-Release-${{ steps.app-versions.outputs.samples_version }}.apk"
+          target: "distFiles/apks/samples/FlowServiceSample-Release-${{ steps.app-versions.outputs.samples_version }}.apk"
+          token: ${{ secrets.CI_BOT_PAT }}
+
+      - name: Create bundle
+        run: ./gradlew createDeveloperBundle -PbundleVersion=${{env.TAG}}
+
+      - name: Create github release and upload apks
+        id: create-release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Version ${{env.TAG}}
+          body: FPS ${{ steps.app-versions.outputs.fps_version }}, Developer Config Provider ${{ steps.app-versions.outputs.config_provider_version }}, AppFlow samples ${{ steps.app-versions.outputs.samples_version }}
+          prerelease: ${{env.PRE_RELEASE}}
+          files: |
+            build/AppFlow-Developer-Bundle-${{env.TAG}}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Slack Notification
+        uses: Aevi-UK/action-slack-notify@master
+        env:
+          SLACK_CHANNEL: sdk-releases
+          SLACK_COLOR: '#CC0033'
+          SLACK_PRETEXT: New AppFlow Bundle
+          VERSION_NAME: ${{env.TAG}}
+          VARIANTS: FPS ${{ steps.app-versions.outputs.fps_version }}, Developer Config Provider ${{ steps.app-versions.outputs.config_provider_version }}, AppFlow samples ${{ steps.app-versions.outputs.samples_version }}
+          RELEASE_URL: ${{ steps.create-release.outputs.url }}
+          SLACK_FOOTER: ${{ env.NOTIFICATION_FOOTER }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_SDK_RELEASES }}

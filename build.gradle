@@ -2,47 +2,24 @@ version = "v12"
 
 buildscript {
     repositories {
-        jcenter()
-        google()
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-}
-
-allprojects {
-
-    repositories {
         google()
         jcenter()
-        mavenCentral()
         maven {
-            url "http://dl.bintray.com/aevi/aevi-uk"
-        }
-        maven {
-            url "http://sdk-public-artifacts.s3-website-eu-west-1.amazonaws.com/maven2"
-        }
-        if (project.hasProperty('aws_accessid')) {
-            maven {
-                url "s3://sdk-qa.aevi.com/maven2"
-                credentials(AwsCredentials) {
-                    accessKey aws_accessid
-                    secretKey aws_accesskey
-                }
-            }
-            maven {
-                url "s3://sdk-releases.aevi.com/maven2"
-                credentials(AwsCredentials) {
-                    accessKey aws_accessid
-                    secretKey aws_accesskey
-                }
+            name = "github-aevi-uk"
+            url = uri("https://maven.pkg.github.com/aevi-uk/gradle-scripts")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") ?: gh_username
+                password = System.getenv("GITHUB_TOKEN") ?: gh_token
             }
         }
     }
+    dependencies {
+        classpath 'com.aevi.sdk.build:gradle-scripts:1.0.9'
+    }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+ext.gradleScript = { path ->
+    return rootProject.buildscript.classLoader.getResource(path).toURI()
 }
 
 apply from: 'dist.gradle'
