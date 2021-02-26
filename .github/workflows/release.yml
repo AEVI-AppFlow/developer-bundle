@@ -100,7 +100,7 @@ jobs:
         id: create-release
         uses: softprops/action-gh-release@v1
         with:
-          name: Version ${{env.TAG}}
+          name: Bundle ${{env.TAG}}
           body: FPS ${{ steps.app-versions.outputs.fps_version }}, Developer Config Provider ${{ steps.app-versions.outputs.config_provider_version }}, AppFlow samples ${{ steps.app-versions.outputs.samples_version }}
           prerelease: ${{env.PRE_RELEASE}}
           files: |
